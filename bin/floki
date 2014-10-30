@@ -1,2 +1,92 @@
 #!/usr/bin/env python
 import vmfusion
+import argparse
+import yaml
+import sys
+
+
+def parse_arguments():
+
+    parser = argparse.ArgumentParser(
+        prog='floki',
+        description='Floki',
+        add_help=True
+    )
+
+    parser.add_argument('--config', '-c',
+                        help="Use a diferent configuration file")
+
+    subparser = parser.add_subparsers(title='subcommands', dest='action')
+
+    subparser.add_parser('start', help='Start the enviroment').add_argument(
+        'env', help='The enviroment to start', default='dev')
+    args = parser.parse_args()
+    return args
+
+
+class Machines:
+    machineList = dict()
+
+    def __init__(self, config='config.yml'):
+        self.loadconfig(config)
+
+    def loadconfig(self, path):
+        try:
+            self.config = yaml.load(file(path, 'r'))
+        except IOError, e:
+            print str(e)
+
+        self.vmrun = vmfusion.vmrun_cli()
+
+    def get_vmx_path():
+        pass
+
+    def getList(self, env='development'):
+        list = dict()
+        basedir = "".join(self.config[0]['project']['dir'] + '/' +
+                          self.config[0]['project']['name'] + '/' + env + '/')
+
+        try:
+            machinelist = self.config[1]['machines'][env]
+            for machine in machinelist:
+                if type(machinelist[machine]) is dict:
+                    list[machine] = machinelist[machine].get('path', basedir +
+                                                             machine +
+                                                             '.vmwarevm/' +
+                                                             machine + '.vmx')
+                else:
+                    list[machine] = "".join(basedir + machine + '.vmwarevm/' +
+                                            machine + '.vmx')
+
+        except KeyError:
+            print "ERROR: Enviroment %s doesn't exist" % env
+            sys.exit(1)
+        return list
+
+    def start(self, env):
+        machinelist = self.getList(env)
+        for machine in machinelist:
+            try:
+                self.vmrun.start(machinelist[machine], False)
+            except ValueError, e:
+                print str(e)
+
+    def stop(self, name, path):
+        pass
+
+    def restart(self, name, path):
+        pass
+
+    def suspend(self, name, path):
+        pass
+
+
+if __name__ == '__main__':
+    args = parse_arguments()
+    machines = Machines()
+
+    if args.action == 'start':
+        machines.start(args.env)
+    else:
+        args.print_help()
+        sys.exit(1)
