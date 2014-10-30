@@ -25,7 +25,6 @@ def parse_arguments():
 
 
 class Machines:
-    machineList = dict()
 
     def __init__(self, config='config.yml'):
         self.loadconfig(config)
@@ -38,25 +37,26 @@ class Machines:
 
         self.vmrun = vmfusion.vmrun_cli()
 
-    def get_vmx_path():
-        pass
+    def vmx_path(self, env, name):
+        path = "".join(self.config[0]['project']['dir'] + '/' +
+                       self.config[0]['project']['name'] + '/' + env + '/' +
+                       name + '.vmwarevm/' + name + '.vmx')
 
-    def getList(self, env='development'):
+        return path
+
+    def get_list(self, env='development'):
+
         list = dict()
-        basedir = "".join(self.config[0]['project']['dir'] + '/' +
-                          self.config[0]['project']['name'] + '/' + env + '/')
 
         try:
             machinelist = self.config[1]['machines'][env]
-            for machine in machinelist:
-                if type(machinelist[machine]) is dict:
-                    list[machine] = machinelist[machine].get('path', basedir +
-                                                             machine +
-                                                             '.vmwarevm/' +
-                                                             machine + '.vmx')
+            for name in machinelist:
+                if type(machinelist[name]) is dict:
+                    list[name] = machinelist[name].get('path',
+                                                       self.vmx_path(env,
+                                                                     name))
                 else:
-                    list[machine] = "".join(basedir + machine + '.vmwarevm/' +
-                                            machine + '.vmx')
+                    list[name] = self.vmx_path(env, name)
 
         except KeyError:
             print "ERROR: Enviroment %s doesn't exist" % env
@@ -64,7 +64,7 @@ class Machines:
         return list
 
     def start(self, env):
-        machinelist = self.getList(env)
+        machinelist = self.get_list(env)
         for machine in machinelist:
             try:
                 self.vmrun.start(machinelist[machine], False)
