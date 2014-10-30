@@ -11,7 +11,6 @@ setup(
     author='Mateus Kern',
     author_email='kern@mateuskern.com',
     license='LICENSE.txt', 
-    install_requires=['vmfusion'],
+    install_requires=['vmfusion', 'pyYAML'],
     scripts=['bin/floki']
-     
 )
