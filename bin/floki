@@ -72,8 +72,14 @@ class Machines:
             sys.exit(1)
         return list
 
-    def get_list_running():
-        pass
+    def get_list_running(self, env):
+        running_list = []
+        for running in self.vmrun.list()['machines']:
+            for name in self.get_list():
+                if running == self.get_list()[name]:
+                    running_list.append(running)
+
+        return running_list
 
     def start(self, env):
         machinelist = self.get_list(env)
