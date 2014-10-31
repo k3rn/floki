@@ -18,9 +18,19 @@ def parse_arguments():
 
     subparser = parser.add_subparsers(title='subcommands', dest='action')
 
-    subparser.add_parser('start', help='Start the enviroment').add_argument(
-        'env', help='The enviroment to start', default='dev')
+    subparser.add_parser('start', help='Start the VMs').add_argument(
+        'env', metavar='enviroment',  help='Which enviroment to start')
+    subparser.add_parser('stop', help='Stop the VMs').add_argument(
+        'env', metavar='enviroment',  help='Which enviroment to stop')
+    subparser.add_parser('restart', help='Restart the VMs').add_argument(
+        'env', metavar='enviroment',  help='Which enviroment to restart')
+    subparser.add_parser('status', help='List the running VMs').add_argument(
+        'env', metavar='enviroment',  help='Which enviroment to list')
+    subparser.add_parser('create', help='Create the VMs').add_argument(
+        'env', metavar='enviroment',  help='Which enviroment to create')
+
     args = parser.parse_args()
+
     return args
 
 
@@ -63,6 +73,9 @@ class Machines:
             sys.exit(1)
         return list
 
+    def get_list_running():
+        pass
+
     def start(self, env):
         machinelist = self.get_list(env)
         for machine in machinelist:
@@ -80,6 +93,11 @@ class Machines:
     def suspend(self, name, path):
         pass
 
+    def status(self):
+        pass
+
+    def create(self, env):
+        pass
 
 if __name__ == '__main__':
     args = parse_arguments()
@@ -87,6 +105,17 @@ if __name__ == '__main__':
 
     if args.action == 'start':
         machines.start(args.env)
+    elif args.action == 'stop':
+        machines.stop(args.env)
+    elif args.action == 'restart':
+        machines.restart(args.env)
+    elif args.action == 'suspend':
+        machines.suspend(args.env)
+    elif args.action == 'status':
+        machines.status(args.env)
+    elif args.action == 'create':
+        machines.create(args.env)
+
     else:
         args.print_help()
         sys.exit(1)
