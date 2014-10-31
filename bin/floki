@@ -48,9 +48,14 @@ class Machines:
         self.vmrun = vmfusion.vmrun_cli()
 
     def vmx_path(self, env, name):
-        path = "".join(self.config[0]['project']['dir'] + '/' +
-                       self.config[0]['project']['name'] + '/' + env + '/' +
-                       name + '.vmwarevm/' + name + '.vmx')
+        machine = self.config[1]['machines'][env][name]
+
+        if type(machine) is dict and 'path' in machine:
+            path = machine['path']
+        else:
+            path = "".join(self.config[0]['project']['dir'] + '/' +
+                           self.config[0]['project']['name'] + '/' + env +
+                           '/' + name + '.vmwarevm/' + name + '.vmx')
 
         return path
 
@@ -59,14 +64,8 @@ class Machines:
         list = dict()
 
         try:
-            machinelist = self.config[1]['machines'][env]
-            for name in machinelist:
-                if type(machinelist[name]) is dict:
-                    list[name] = machinelist[name].get('path',
-                                                       self.vmx_path(env,
-                                                                     name))
-                else:
-                    list[name] = self.vmx_path(env, name)
+            for name in self.config[1]['machines'][env]:
+                list[name] = self.vmx_path(env, name)
 
         except KeyError:
             print "ERROR: Enviroment %s doesn't exist" % env
