@@ -37,9 +37,9 @@ def parse_arguments():
 class Machines:
 
     def __init__(self, config='config.yml'):
-        self.loadconfig(config)
+        self.load_config(config)
 
-    def loadconfig(self, path):
+    def load_config(self, path):
         try:
             self.config = yaml.load(file(path, 'r'))
         except IOError, e:
@@ -85,9 +85,11 @@ class Machines:
         machinelist = self.get_list(env)
         for machine in machinelist:
             try:
+                print "Starting %s:" % machine,
                 self.vmrun.start(machinelist[machine], False)
+                print "ok"
             except ValueError, e:
-                print str(e)
+                print "ERROR: %s" % str(e)
 
     def stop(self, env):
         for machine in self.get_list_running(env):
@@ -105,6 +107,7 @@ class Machines:
         pass
 
     def status(self, env):
+        print "Machines running:"
         for machine in self.get_list_running(env):
             print machine
         print "Total: %s machine(s) running" % len(self.get_list_running(env))
