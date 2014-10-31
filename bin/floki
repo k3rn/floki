@@ -98,8 +98,10 @@ class Machines:
     def suspend(self, name, path):
         pass
 
-    def status(self):
-        pass
+    def status(self, env):
+        for machine in self.get_list_running(env):
+            print machine
+        print "Total: %s machine(s) running" % len(self.get_list_running(env))
 
     def create(self, env):
         pass
