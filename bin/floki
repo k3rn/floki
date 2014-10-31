@@ -89,8 +89,14 @@ class Machines:
             except ValueError, e:
                 print str(e)
 
-    def stop(self, name, path):
-        pass
+    def stop(self, env):
+        for machine in self.get_list_running(env):
+            try:
+                print "Stoping %s" % machine,
+                self.vmrun.stop(machine, False)
+                print "ok."
+            finally:
+                print "failed."
 
     def restart(self, name, path):
         pass
