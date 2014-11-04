@@ -13,7 +13,7 @@ def parse_arguments():
         add_help=True
     )
 
-    parser.add_argument('--config', '-c', dest='config',
+    parser.add_argument('--config', '-c', dest='config', default='config.yml',
                         help="Use a diferent configuration file",)
 
     subparser = parser.add_subparsers(title='subcommands', dest='action')
@@ -36,7 +36,7 @@ def parse_arguments():
 
 class Machines:
 
-    def __init__(self, config='config.yml'):
+    def __init__(self, config):
         self.load_config(config)
 
     def load_config(self, path):
@@ -117,10 +117,7 @@ class Machines:
 
 if __name__ == '__main__':
     args = parse_arguments()
-    if args.config is None:
-        machines = Machines()
-    else:
-        machines = Machines(args.config)
+    machines = Machines(args.config)
 
     if args.action == 'start':
         machines.start(args.env)
