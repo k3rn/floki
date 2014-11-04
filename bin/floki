@@ -13,8 +13,8 @@ def parse_arguments():
         add_help=True
     )
 
-    parser.add_argument('--config', '-c',
-                        help="Use a diferent configuration file")
+    parser.add_argument('--config', '-c', dest='config',
+                        help="Use a diferent configuration file",)
 
     subparser = parser.add_subparsers(title='subcommands', dest='action')
 
@@ -117,7 +117,10 @@ class Machines:
 
 if __name__ == '__main__':
     args = parse_arguments()
-    machines = Machines()
+    if args.config is None:
+        machines = Machines()
+    else:
+        machines = Machines(args.config)
 
     if args.action == 'start':
         machines.start(args.env)
