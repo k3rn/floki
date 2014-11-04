@@ -18,16 +18,35 @@ def parse_arguments():
 
     subparser = parser.add_subparsers(title='subcommands', dest='action')
 
-    subparser.add_parser('start', help='Start the VMs').add_argument(
-        'env', metavar='enviroment',  help='Which enviroment to start')
-    subparser.add_parser('stop', help='Stop the VMs').add_argument(
-        'env', metavar='enviroment',  help='Which enviroment to stop')
-    subparser.add_parser('restart', help='Restart the VMs').add_argument(
-        'env', metavar='enviroment',  help='Which enviroment to restart')
-    subparser.add_parser('status', help='List the running VMs').add_argument(
-        'env', metavar='enviroment',  help='Which enviroment to list')
-    subparser.add_parser('create', help='Create the VMs').add_argument(
-        'env', metavar='enviroment',  help='Which enviroment to create')
+    start = subparser.add_parser('start', help='Start the VMs')
+    start.add_argument('env', metavar='enviroment',
+                       help='Which enviroment to start')
+    start.add_argument('-g', '--group', nargs='*', dest='groups',
+                       help='Which groups of machines to start')
+
+    stop = subparser.add_parser('stop', help='Stop the VMs')
+    stop.add_argument('env', metavar='enviroment',
+                      help='Which enviroment to stop')
+    stop.add_argument('-g', '--group', nargs='*', dest='groups',
+                      help='Which groups of machines to start')
+
+    restart = subparser.add_parser('restart', help='Restart the VMs')
+    restart.add_argument('env', metavar='enviroment',
+                         help='Which enviroment to restart')
+    restart.add_argument('-g', '--group', nargs='*', dest='groups',
+                         help='Which groups of machines to start')
+
+    status = subparser.add_parser('status', help='List the running VMs')
+    status.add_argument('env', metavar='enviroment',
+                        help='Which enviroment to list')
+    status.add_argument('-g', '--group', nargs='*', dest='groups',
+                        help='Which groups of machines to start')
+
+    create = subparser.add_parser('create', help='Create the VMs')
+    create.add_argument('env', metavar='enviroment',
+                        help='Which enviroment to create')
+    create.add_argument('-g', '--group', nargs='*', dest='groups',
+                        help='Which groups of machines to start')
 
     args = parser.parse_args()
 
@@ -47,42 +66,53 @@ class Machines:
 
         self.vmrun = vmfusion.vmrun_cli()
 
-    def vmx_path(self, env, name):
-        machine = self.config[1]['machines'][env][name]
+    def vmx_path(self, env, group, name):
+        machine = self.config[1]['machines'][env][group][name]
 
         if type(machine) is dict and 'path' in machine:
             path = machine['path']
         else:
             path = "".join(self.config[0]['project']['dir'] + '/' +
                            self.config[0]['project']['name'] + '/' + env +
-                           '/' + name + '.vmwarevm/' + name + '.vmx')
+                           '+' + group + '/' + name + '.vmwarevm/' + name +
+                           '.vmx')
 
         return path
 
-    def get_list(self, env='development'):
+    def get_list(self, env, groups):
 
         list = dict()
 
-        try:
-            for name in self.config[1]['machines'][env]:
-                list[name] = self.vmx_path(env, name)
+        if groups[0] is 'all':
+            groups = self.config[1]['machines'][env].keys()
 
-        except KeyError:
-            print "ERROR: Enviroment %s doesn't exist" % env
+        for group in groups:
+            try:
+                for name in self.config[1]['machines'][env][group]:
+                    list[name] = self.vmx_path(env, group,  name)
+
+            except KeyError:
+                if env not in self.config[1]['machines']:
+                    print "ERROR: Enviroment %s doesn't exist" % env
+                else:
+                    print "ERROR: Group %s doesn't exist" % group
+
+        if any(list):
+            return list
+        else:
             sys.exit(1)
-        return list
 
-    def get_list_running(self, env):
+    def get_list_running(self, env, groups):
         running_list = dict()
         for running in self.vmrun.list()['machines']:
-            for name in self.get_list():
-                if running == self.get_list()[name]:
+            for name in self.get_list(env, groups):
+                if running == self.get_list(env, groups)[name]:
                     running_list[name] = running
 
         return running_list
 
-    def start(self, env):
-        machinelist = self.get_list(env)
+    def start(self, env, groups):
+        machinelist = self.get_list(env, groups)
         for machine in machinelist:
             try:
                 print "Starting %s:" % machine,
@@ -91,8 +121,8 @@ class Machines:
             except ValueError, e:
                 print "ERROR: %s" % str(e)
 
-    def stop(self, env):
-        for machine in self.get_list_running(env):
+    def stop(self, env, groups):
+        for machine in self.get_list_running(env, groups):
             try:
                 print "Stoping %s" % machine,
                 self.vmrun.stop(machine, False)
@@ -106,11 +136,13 @@ class Machines:
     def suspend(self, name, path):
         pass
 
-    def status(self, env):
+    def status(self, env, group):
+        running_list = self.get_list_running(env, group)
         print "Machines running:"
-        for machine in self.get_list_running(env):
+        for machine in running_list:
             print machine
-        print "Total: %s machine(s) running" % len(self.get_list_running(env))
+        print "Total: %s machine(s) running" % len(running_list)
+        print group
 
     def create(self, env):
         pass
@@ -119,18 +151,21 @@ if __name__ == '__main__':
     args = parse_arguments()
     machines = Machines(args.config)
 
+    if args.groups is None:
+        args.groups = ['all']
+
     if args.action == 'start':
-        machines.start(args.env)
+        machines.start(args.env, args.groups)
     elif args.action == 'stop':
-        machines.stop(args.env)
+        machines.stop(args.env, args.groups)
     elif args.action == 'restart':
-        machines.restart(args.env)
+        machines.restart(args.env, args.groups)
     elif args.action == 'suspend':
-        machines.suspend(args.env)
+        machines.suspend(args.env, args.groups)
     elif args.action == 'status':
-        machines.status(args.env)
+        machines.status(args.env, args.groups)
     elif args.action == 'create':
-        machines.create(args.env)
+        machines.create(args.env, args.groups)
 
     else:
         args.print_help()
