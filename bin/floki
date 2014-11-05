@@ -71,7 +71,7 @@ class Machines:
 
         self.vmrun = vmfusion.vmrun_cli()
 
-    def vmx_path(self, env, group, name):
+    def get_vmx_path(self, env, group, name):
         machine = self.config[1]['machines'][env][group][name]
 
         if type(machine) is dict and 'path' in machine:
@@ -94,7 +94,7 @@ class Machines:
         for group in groups:
             try:
                 for name in self.config[1]['machines'][env][group]:
-                    list[name] = self.vmx_path(env, group,  name)
+                    list[name] = self.get_vmx_path(env, group,  name)
 
             except KeyError:
                 if env not in self.config[1]['machines']:
@@ -129,8 +129,8 @@ class Machines:
     def stop(self, env, groups):
         for machine in self.get_list_running(env, groups):
             try:
-                print "Stoping %s" % machine,
-                self.vmrun.stop(machine, False)
+                print "Stopping %s" % machine,
+                self.vmrun.stop(get_vmx_path(env, group, machine), False)
                 print "ok."
             finally:
                 print "failed."
