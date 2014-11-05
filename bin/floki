@@ -22,30 +22,35 @@ def parse_arguments():
     start.add_argument('env', metavar='enviroment',
                        help='Which enviroment to start')
     start.add_argument('-g', '--group', nargs='*', dest='groups',
+                       default="['all']",
                        help='Which groups of machines to start')
 
     stop = subparser.add_parser('stop', help='Stop the VMs')
     stop.add_argument('env', metavar='enviroment',
                       help='Which enviroment to stop')
     stop.add_argument('-g', '--group', nargs='*', dest='groups',
+                      default="['all']",
                       help='Which groups of machines to start')
 
     restart = subparser.add_parser('restart', help='Restart the VMs')
     restart.add_argument('env', metavar='enviroment',
                          help='Which enviroment to restart')
     restart.add_argument('-g', '--group', nargs='*', dest='groups',
+                         default="['all']",
                          help='Which groups of machines to start')
 
     status = subparser.add_parser('status', help='List the running VMs')
     status.add_argument('env', metavar='enviroment',
                         help='Which enviroment to list')
     status.add_argument('-g', '--group', nargs='*', dest='groups',
+                        default="['all']",
                         help='Which groups of machines to start')
 
     create = subparser.add_parser('create', help='Create the VMs')
     create.add_argument('env', metavar='enviroment',
                         help='Which enviroment to create')
     create.add_argument('-g', '--group', nargs='*', dest='groups',
+                        default="['all']",
                         help='Which groups of machines to start')
 
     args = parser.parse_args()
@@ -150,9 +155,6 @@ class Machines:
 if __name__ == '__main__':
     args = parse_arguments()
     machines = Machines(args.config)
-
-    if args.groups is None:
-        args.groups = ['all']
 
     if args.action == 'start':
         machines.start(args.env, args.groups)
