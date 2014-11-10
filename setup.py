@@ -10,7 +10,9 @@ setup(
     version='0.0.1',
     author='Mateus Kern',
     author_email='kern@mateuskern.com',
-    license='LICENSE.txt', 
+    license='LICENSE.txt',
     install_requires=['vmfusion', 'pyYAML'],
-    scripts=['bin/floki']
+    packages=['floki'],
+    scripts=['bin/floki'],
+    test_suite='floki.tests'
 )
