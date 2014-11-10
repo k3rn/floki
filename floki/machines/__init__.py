@@ -1,5 +1,6 @@
 import vmfusion
 import yaml
+import sys
 
 
 class Machines:
@@ -22,21 +23,20 @@ class Machines:
         else:
             path = "".join(self.config[0]['project']['dir'] + '/' +
                            self.config[0]['project']['name'] + '/' + env +
-                           '+' + NAME + '.vmwarevm/' + name + '.vmx')
+                           '/' + name + '.vmwarevm/' + name + '.vmx')
 
         return path
 
     def get_list(self, env, groups):
 
         list = dict()
-        print type(groups)
         if groups[0] is 'all':
             groups = self.config[1]['machines'][env].keys()
 
         for group in groups:
             try:
                 for name in self.config[1]['machines'][env][group]:
-                    list[name] = self.get_vmx_path(env, name)
+                    list[name] = self.get_vmx_path(env, group,  name)
 
             except KeyError:
                 if env not in self.config[1]['machines']:
