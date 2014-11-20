@@ -49,10 +49,10 @@ class Machines:
         else:
             sys.exit(1)
 
-    def get_list_running(self, env, groups):
+    def get_list_running(self, running, env, groups):
         running_list = dict()
-        if self.vmrun.list()['count'] is not 0:
-            for running in self.vmrun.list()['machines']:
+        if running['count'] is not 0:
+            for running in running['machines']:
                 for name in self.get_list(env, groups):
                     if running == self.get_list(env, groups)[name]:
                         running_list[name] = running
@@ -85,7 +85,7 @@ class Machines:
         pass
 
     def status(self, env, group):
-        running_list = self.get_list_running(env, group)
+        running_list = self.get_list_running(self.vmrun.list(), env, group)
         if len(running_list) is 0:
             print 'No machine running'
         else:
