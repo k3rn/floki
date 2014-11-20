@@ -48,5 +48,24 @@ class functions_with_return(unittest.TestCase):
                           'development/db01.vmwarevm/db01.vmx'}
         self.assertEqual(self.machine.get_list('development', groups), result)
 
+    def test_get_list_running_norunning(self):
+        self.assertEqual(len(self.machine.get_list_running({'count': 0},
+                                                           'development',
+                                                           ['all'])),
+                         0)
+
+    def test_get_list_running(self):
+        machinerunning = "".join('/Volumes/Hulk/VirtualMachines/skaro/' +
+                                 'development/db01.vmwarevm/db01.vmx')
+
+        running = {'count': 1,
+                   'machines': [machinerunning,
+                                '/Volumes/Hulk/VirtualMachines/notinthelist']}
+        self.assertEqual(self.machine.get_list_running(running,
+                                                       'development',
+                                                       ['all']
+                                                       ),
+                         {'db01': machinerunning})
+
 if __name__ == "__main__":
     unittest.main()
