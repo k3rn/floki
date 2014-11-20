@@ -51,10 +51,11 @@ class Machines:
 
     def get_list_running(self, env, groups):
         running_list = dict()
-        for running in self.vmrun.list()['machines']:
-            for name in self.get_list(env, groups):
-                if running == self.get_list(env, groups)[name]:
-                    running_list[name] = running
+        if self.vmrun.list()['count'] is not 0:
+            for running in self.vmrun.list()['machines']:
+                for name in self.get_list(env, groups):
+                    if running == self.get_list(env, groups)[name]:
+                        running_list[name] = running
 
         return running_list
 
@@ -85,11 +86,13 @@ class Machines:
 
     def status(self, env, group):
         running_list = self.get_list_running(env, group)
-        print "Machines running:"
-        for machine in running_list:
-            print machine
-        print "Total: %s machine(s) running" % len(running_list)
-        print group
+        if len(running_list) is 0:
+            print 'No machine running'
+        else:
+            print "Machines running:"
+            for machine in running_list:
+                print machine
+            print "Total: %s machine(s) running" % len(running_list)
 
     def create(self, env):
         pass
