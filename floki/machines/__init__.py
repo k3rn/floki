@@ -70,7 +70,7 @@ class Machines:
                 print "ERROR: %s" % str(e)
 
     def stop(self, env, groups):
-        for machine in self.get_list_running(env, groups):
+        for machine in self.get_list_running(self.vmrun.list(), env, groups):
             try:
                 print "Stopping %s" % machine,
                 self.vmrun.stop(get_vmx_path(env, group, machine), False)
