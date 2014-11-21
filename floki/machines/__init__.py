@@ -82,8 +82,14 @@ class Machines:
         stop(env, groups)
         start(env, groups)
 
-    def suspend(self, name, path):
-        pass
+    def suspend(self, env, groups):
+        for machine in self.get_list_running(self.vmrun.list(), env, groups):
+            try:
+                print "Suspending %s" % machine,
+                self.vmrun.stop(get_vmx_path(env, group, machine), False)
+                print "ok."
+            finally:
+                print "failed."
 
     def status(self, env, group):
         running_list = self.get_list_running(self.vmrun.list(), env, group)
