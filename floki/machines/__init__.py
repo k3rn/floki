@@ -78,8 +78,9 @@ class Machines:
             finally:
                 print "failed."
 
-    def restart(self, name, path):
-        pass
+    def restart(self, env, groups):
+        stop(env, groups)
+        start(env, groups)
 
     def suspend(self, name, path):
         pass
