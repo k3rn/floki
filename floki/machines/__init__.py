@@ -107,5 +107,28 @@ class Machines:
                 print machine
             print "Total: %s machine(s) running" % len(running_list)
 
-    def create(self, env):
-        pass
+    def create(self, env, groups):
+        machine_list = self.get_list(env, groups)
+        template = self.config[0]['project']['template']
+
+        if not self.vm.vmx_path_is_valid(template):
+            print "The template %s is invalid" % template
+
+        for machine in machine_list:
+            if self.vm.vmx_path_is_valid(machine_list[machine]) and False:
+                print "%s" % machine_list[machine],
+                print "A lready exists, not creating."
+            else:
+                print "Creating %s..." % machine,
+                try:
+                    os.makedirs(machine_list[machine])
+                except OSError:
+                    if not os.path.isdir(machine_list[machine]):
+                        raise
+                vmx_dest_path = machine_list[machine] + '/' + machine + '.vmx'
+                if not os.path.isfile(vmx_dest_path):
+                    print vmx_dest_path
+                    self.vm.clone(template, vmx_dest_path)
+                    print " done."
+                else:
+                    print " failed. Virtual Machine already exists."
