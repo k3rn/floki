@@ -1,8 +1,9 @@
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
     print 'Please install setuptools.' \
-          'You probrably can install it via your package manager (usually python-setup tools) or via pip (pip install setuptools).'
+          'You probrably can install it via your package manager (usually' \
+          'python-setup tools) or via pip (pip install setuptools).'
     sys.exit(1)
 
 setup(
@@ -12,7 +13,7 @@ setup(
     author_email='kern@mateuskern.com',
     license='LICENSE.txt',
     install_requires=['vmfusion', 'pyYAML'],
-    packages=['floki'],
+    packages=find_packages(exclude=["tests"]),
     scripts=['bin/floki'],
     test_suite='floki.tests'
 )
