@@ -61,12 +61,16 @@ class Machines:
         return running_list
 
     def start(self, env, groups):
+        machines_running = self.get_list_running(self.vm.list(), env, groups)
         machine_list = self.get_list(env, groups)
         for machine in machine_list:
             try:
-                print "Starting %s:" % machine,
-                self.vmrun.start(machine_list[machine], False)
-                print "ok"
+                if machines_running.keys().count(machine) is 0:
+                    print "Machine %s is already running." % machine
+                else:
+                    print "Starting %s:" % machine,
+                    self.vm.start(machine_list[machine], False)
+                    print "ok"
             except ValueError, e:
                 print "ERROR: %s" % str(e)
 
