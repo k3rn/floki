@@ -24,7 +24,7 @@ class Machines:
         else:
             path = "".join(self.config[0]['project']['dir'] + '/' +
                            self.config[0]['project']['name'] + '/' + env +
-                           '/' + name + '.vmwarevm/' + name + '.vmx')
+                           '/' + name + '.vmwarevm')
 
         return path
 
