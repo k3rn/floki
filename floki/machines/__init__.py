@@ -79,7 +79,7 @@ class Machines:
         for machine in machine_list:
             try:
                 print "Stopping %s" % machine,
-                self.vmrun.stop(get_vmx_path(env, group, machine), False)
+                self.vm.stop(machine_list[machine]), False
                 print "ok."
             finally:
                 print "failed."
