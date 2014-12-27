@@ -3,8 +3,9 @@ import argparse
 from floki.machines import Machines
 try:
     from pudb import set_trace
-except ImportError:
     pudb_present = True
+except ImportError:
+    pudb_present = False
 
 
 def parse_arguments():
@@ -64,7 +65,7 @@ if __name__ == '__main__':
     args = parse_arguments()
     machines = Machines(args.config)
     if args.debug:
-        if not pudb_present:
+        if pudb_present:
             set_trace()
         else:
             print "Please install pudb to debug."
