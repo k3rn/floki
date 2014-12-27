@@ -52,12 +52,12 @@ class Machines:
 
     def get_list_running(self, running, env, groups):
         running_list = dict()
+        machine_list = self.get_list(env, groups)
         if running['count'] is not 0:
-            for running in running['machines']:
-                for name in self.get_list(env, groups):
-                    if running == self.get_list(env, groups)[name]:
-                        running_list[name] = running
-
+            for machine in machine_list:
+                for path in running['machines']:
+                    if machine_list[machine] in path:
+                        running_list[machine] = path
         return running_list
 
     def start(self, env, groups):
