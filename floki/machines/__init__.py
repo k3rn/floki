@@ -65,12 +65,9 @@ class Machines:
         machine_list = self.get_list(env, groups)
         for machine in machine_list:
             try:
-                if machines_running.keys().count(machine) is 0:
-                    print "Machine %s is already running." % machine
-                else:
-                    print "Starting %s:" % machine,
-                    self.vm.start(machine_list[machine], False)
-                    print "ok"
+                print "Starting %s:" % machine,
+                self.vm.start(machine_list[machine], False)
+                print "ok"
             except ValueError, e:
                 print "ERROR: %s" % str(e)
 
