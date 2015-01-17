@@ -102,7 +102,7 @@ class Machines:
                 print "Stopping %s" % machine,
                 self.vm.stop(machine_list[machine]), False
                 print "ok."
-            finally:
+            except:
                 print "failed."
 
     def restart(self, env, groups):
