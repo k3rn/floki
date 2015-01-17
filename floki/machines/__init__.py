@@ -60,6 +60,28 @@ class Machines:
                         running_list[machine] = path
         return running_list
 
+    def generate_inventory(self, env, groups):
+        """
+        Generate a inventory file to be used with Ansible
+
+        """
+        if groups[0] is 'all':
+            groups = self.config[1]['machines'][env].keys()
+
+        print "Crating the inventory file: ",
+
+        with open(env + '.ini', 'w') as inventory:
+            for group in groups:
+                inventory.write('[' + group + ']' + '\n')
+                machines = self.config[1]['machines'][env][group]
+                for name in machines:
+                    ip = self.vm.get_ip(self.get_vmx_path(env, group, name))
+                    if 'Error' not in ip:
+                        ipaddr = '  ansible_ssh_host=' + ip
+                        inventory.write(name + ipaddr)
+                    else:
+                        print ip
+
     def start(self, env, groups):
         machines_running = self.get_list_running(self.vm.list(), env, groups)
         machine_list = self.get_list(env, groups)
@@ -70,6 +92,8 @@ class Machines:
                 print "ok"
             except ValueError, e:
                 print "ERROR: %s" % str(e)
+
+        self.generate_inventory(env, groups)
 
     def stop(self, env, groups):
         machine_list = self.get_list_running(self.vm.list(), env, groups)
