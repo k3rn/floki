@@ -2,6 +2,7 @@ from vmrun_wrapper.vmrun import machine
 import yaml
 import sys
 import os
+import time
 
 
 class Machines:
@@ -68,19 +69,33 @@ class Machines:
         if groups[0] is 'all':
             groups = self.config[1]['machines'][env].keys()
 
-        print "Crating the inventory file: ",
+        print "[%s] Crating the inventory file:" % env,
 
-        with open(env + '.ini', 'w') as inventory:
-            for group in groups:
-                inventory.write('[' + group + ']' + '\n')
-                machines = self.config[1]['machines'][env][group]
-                for name in machines:
-                    ip = self.vm.get_ip(self.get_vmx_path(env, group, name))
-                    if 'Error' not in ip:
-                        ipaddr = '  ansible_ssh_host=' + ip
-                        inventory.write(name + ipaddr)
-                    else:
-                        print ip
+        try:
+            with open(env + '.ini', 'w') as inventory:
+                for group in groups:
+                    inventory.write('[' + group + ']' + '\n')
+                    machines = self.config[1]['machines'][env][group]
+                    for name in machines:
+                        ip = self.vm.get_ip(self.get_vmx_path(env, group,
+                                                              name))
+                        if ip == '\n':
+                            for i in range(0, 5):
+                                time.sleep(5)
+                                ip = self.vm.get_ip(self.get_vmx_path(env,
+                                                                      group,
+                                                                      name))
+                                if ip != '\n':
+                                    break
+
+                        if 'Error' not in ip:
+                            ipaddr = '  ansible_ssh_host=' + ip
+                            inventory.write(name + ipaddr)
+                        else:
+                            raise ValueError
+            print "ok."
+        except:
+            print "failed."
 
     def start(self, env, groups):
         machines_running = self.get_list_running(self.vm.list(), env, groups)
