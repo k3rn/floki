@@ -102,7 +102,7 @@ class Machines:
         machine_list = self.get_list(env, groups)
         for machine in machine_list:
             try:
-                print "Starting %s:" % machine,
+                print "[%s] Starting %s:" % (env, machine),
                 self.vm.start(machine_list[machine], False)
                 print "ok"
             except ValueError, e:
@@ -114,7 +114,7 @@ class Machines:
         machine_list = self.get_list_running(self.vm.list(), env, groups)
         for machine in machine_list:
             try:
-                print "Stopping %s" % machine,
+                print "[%s] Stopping %s:" % (env, machine),
                 self.vm.stop(machine_list[machine]), False
                 print "ok."
             except:
@@ -127,7 +127,7 @@ class Machines:
     def suspend(self, env, groups):
         for machine in self.get_list_running(self.vm.list(), env, groups):
             try:
-                print "Suspending %s" % machine,
+                print "[%s] Suspending %s" % (env, machine),
                 self.vm.stop(get_vmx_path(env, group, machine), False)
                 print "ok."
             finally:
@@ -153,9 +153,9 @@ class Machines:
         for machine in machine_list:
             if self.vm.vmx_path_is_valid(machine_list[machine]) and False:
                 print "%s" % machine_list[machine],
-                print "A lready exists, not creating."
+                print "Already exists, not creating."
             else:
-                print "Creating %s..." % machine,
+                print "[%s] Creating %s..." % (env, machine),
                 try:
                     os.makedirs(machine_list[machine])
                 except OSError:
@@ -165,6 +165,6 @@ class Machines:
                 if not os.path.isfile(vmx_dest_path):
                     print vmx_dest_path
                     self.vm.clone(template, vmx_dest_path)
-                    print " done."
+                    print "done."
                 else:
-                    print " failed. Virtual Machine already exists."
+                    print "failed. Virtual Machine already exists."
