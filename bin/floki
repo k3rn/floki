@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 import argparse
 from floki.machines import Machines
-try:
-    from pudb import set_trace
-    pudb_present = True
-except ImportError:
-    pudb_present = False
-
 
 def parse_arguments():
 
@@ -18,8 +12,6 @@ def parse_arguments():
 
     parser.add_argument('--config', '-c', dest='config', default='config.yml',
                         help="Use a diferent configuration file",)
-    parser.add_argument('--debug', '-d', action='store_true', default=False,
-                        dest='debug', help='Debug the program with pudb')
     subparser = parser.add_subparsers(title='subcommands', dest='action')
 
     start = subparser.add_parser('start', help='Start the VMs')
@@ -64,11 +56,6 @@ def parse_arguments():
 if __name__ == '__main__':
     args = parse_arguments()
     machines = Machines(args.config)
-    if args.debug:
-        if pudb_present:
-            set_trace()
-        else:
-            print "Please install pudb to debug."
 
     if args.action == 'start':
         machines.start(args.env, args.groups)
