@@ -1,4 +1,5 @@
 import unittest
+import mock
 from floki.machines import Machines
 
 
@@ -13,7 +14,7 @@ class functions_with_return(unittest.TestCase):
                                                    'main-servers',
                                                    'web01'),
                          '/Volumes/Hulk/VirtualMachines/skaro/development/' +
-                         'web01.vmwarevm/web01.vmx')
+                         'web01.vmwarevm')
 
     def test_get_vmx_path_with_path_set(self):
         self.assertEqual(self.machine.get_vmx_path('development',
@@ -24,28 +25,28 @@ class functions_with_return(unittest.TestCase):
 
     def test_get_list(self):
         result = {'cache01': '/Volumes/Hulk/VirtualMachines/skaro/' +
-                             'development/cache01.vmwarevm/cache01.vmx',
+                             'development/cache01.vmwarevm',
                   'cache02': '/Volumes/Hulk/VirtualMachines/skaro/' +
-                             'development/cache02.vmwarevm/cache02.vmx'}
+                             'development/cache02.vmwarevm'}
         self.assertEqual(self.machine.get_list('development', ['alt-servers']),
                          result)
 
     def test_get_list_with_all_groups(self):
         groups = ['all']
         result = {'cache01': '/Volumes/Hulk/VirtualMachines/skaro/' +
-                             'development/cache01.vmwarevm/cache01.vmx',
+                             'development/cache01.vmwarevm',
                   'cache02': '/Volumes/Hulk/VirtualMachines/skaro/' +
-                             'development/cache02.vmwarevm/cache02.vmx',
+                             'development/cache02.vmwarevm',
                   'web04': '/Volumes/Hulk/VirtualMachines/templates/' +
                            'debian-amd64.vmwarevm/debian-amd64.vmx',
                   'web03': '/Volumes/Hulk/VirtualMachines/skaro/' +
-                           'development/web03.vmwarevm/web03.vmx',
+                           'development/web03.vmwarevm',
                   'web01': '/Volumes/Hulk/VirtualMachines/skaro/' +
-                           'development/web01.vmwarevm/web01.vmx',
+                           'development/web01.vmwarevm',
                   'db02': '/Volumes/Hulk/VirtualMachines/skaro/' +
-                          'development/db02.vmwarevm/db02.vmx',
+                          'development/db02.vmwarevm',
                   'db01': '/Volumes/Hulk/VirtualMachines/skaro/' +
-                          'development/db01.vmwarevm/db01.vmx'}
+                          'development/db01.vmwarevm'}
         self.assertEqual(self.machine.get_list('development', groups), result)
 
     def test_get_list_running_norunning(self):
