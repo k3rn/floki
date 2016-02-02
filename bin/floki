@@ -2,6 +2,7 @@
 import argparse
 from floki.machines import Machines
 
+
 def parse_arguments():
 
     parser = argparse.ArgumentParser(
@@ -10,7 +11,7 @@ def parse_arguments():
         add_help=True
     )
 
-    parser.add_argument('--config', '-c', dest='config', default='config.yml',
+    parser.add_argument('--config', '-c', dest='config', default='floki.yml',
                         help="Use a diferent configuration file",)
     subparser = parser.add_subparsers(title='subcommands', dest='action')
 
