@@ -9,7 +9,7 @@ class Machines:
 
     def __init__(self, config):
         self.load_config(config)
-        if os.environ['VMRUN']:
+        if os.environ.get('VMRUN'):
             self.vm = machine.machine(os.environ['VMRUN'])
         else:
             self.vm = machine.machine()
