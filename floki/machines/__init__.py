@@ -32,6 +32,18 @@ class Machines:
 
         return path
 
+    def does_machine_exists(self, machine_path):
+        if os.path.isdir(machine_path) and machine_path.endswith('vmwarevm'):
+            for file in os.listdir(machine_path):
+                if file.endswith('.vmx'):
+                    if os.path.isfile(machine_path + '/' + file):
+                        return True
+        elif machine_path.endswith('vmx') and os.path.isfile(machine_path):
+            if os.path.isfile(machine_path):
+                return True
+        else:
+            raise IOError('Machine doesn\'t exist.')
+
     def get_list(self, env, groups):
 
         list = dict()
