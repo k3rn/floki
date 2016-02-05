@@ -166,8 +166,7 @@ class Machines:
                         raise
                 vmx_dest_path = machine_list[machine] + '/' + machine + '.vmx'
                 if not os.path.isfile(vmx_dest_path):
-                    print vmx_dest_path
                     self.vm.clone(template, vmx_dest_path)
                     print "done."
                 else:
-                    print "failed. Virtual Machine already exists."
+                    print "skiping, virtual machine already exists."
