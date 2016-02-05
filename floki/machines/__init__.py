@@ -118,10 +118,11 @@ class Machines:
         for machine in machine_list:
             try:
                 print "[%s] Starting %s:" % (env, machine),
-                self.vm.start(machine_list[machine], False)
-                print "ok"
-            except ValueError, e:
-                print "ERROR: %s" % str(e)
+                if self.does_machine_exists(machine_list[machine]):
+                    self.vm.start(machine_list[machine], False)
+                    print "ok"
+            except IOError, e:
+                print " %s" % str(e)
 
         self.generate_inventory(env, groups)
 
