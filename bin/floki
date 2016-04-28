@@ -5,6 +5,11 @@ from floki.machines import Machines
 
 def parse_arguments():
 
+    parent_parser = argparse.ArgumentParser(add_help=False)
+    parent_parser.add_argument('env', metavar='enviroment')
+    parent_parser.add_argument('-g', '--group', nargs='*', dest='groups',
+                               default=['all'])
+
     parser = argparse.ArgumentParser(
         prog='floki',
         description='Floki',
@@ -15,40 +20,16 @@ def parse_arguments():
                         help="Use a diferent configuration file",)
     subparser = parser.add_subparsers(title='subcommands', dest='action')
 
-    start = subparser.add_parser('start', help='Start the VMs')
-    start.add_argument('env', metavar='enviroment',
-                       help='Which enviroment to start')
-    start.add_argument('-g', '--group', nargs='*', dest='groups',
-                       default=['all'],
-                       help='Which groups of machines to start')
-
-    stop = subparser.add_parser('stop', help='Stop the VMs')
-    stop.add_argument('env', metavar='enviroment',
-                      help='Which enviroment to stop')
-    stop.add_argument('-g', '--group', nargs='*', dest='groups',
-                      default=['all'],
-                      help='Which groups of machines to start')
-
-    restart = subparser.add_parser('restart', help='Restart the VMs')
-    restart.add_argument('env', metavar='enviroment',
-                         help='Which enviroment to restart')
-    restart.add_argument('-g', '--group', nargs='*', dest='groups',
-                         default=['all'],
-                         help='Which groups of machines to start')
-
-    status = subparser.add_parser('status', help='List the running VMs')
-    status.add_argument('env', metavar='enviroment',
-                        help='Which enviroment to list')
-    status.add_argument('-g', '--group', nargs='*', dest='groups',
-                        default=['all'], type=list,
-                        help='Which groups of machines to start')
-
-    create = subparser.add_parser('create', help='Create the VMs')
-    create.add_argument('env', metavar='enviroment',
-                        help='Which enviroment to create')
-    create.add_argument('-g', '--group', nargs='*', dest='groups',
-                        default=['all'],
-                        help='Which groups of machines to start')
+    start = subparser.add_parser('start', parents=[parent_parser],
+                                 help='Start the VMs')
+    stop = subparser.add_parser('stop', parents=[parent_parser],
+                                help='Stop the VMs')
+    restart = subparser.add_parser('restart', parents=[parent_parser],
+                                   help='Restart the VMs')
+    status = subparser.add_parser('status', parents=[parent_parser],
+                                  help='List the running VMs')
+    create = subparser.add_parser('create', parents=[parent_parser],
+                                  help='Create the VMs')
 
     args = parser.parse_args()
 
