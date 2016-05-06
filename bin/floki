@@ -9,6 +9,7 @@ def parse_arguments():
     parent_parser.add_argument('env', metavar='enviroment')
     parent_parser.add_argument('-g', '--group', nargs='*', dest='groups',
                                default=['all'])
+    parent_parser.add_argument('-s', '--single', dest='single')
 
     parser = argparse.ArgumentParser(
         prog='floki',
@@ -40,17 +41,17 @@ if __name__ == '__main__':
     machines = Machines(args.config)
 
     if args.action == 'start':
-        machines.start(args.env, args.groups)
+        machines.start(args.env, args.groups, args.single)
     elif args.action == 'stop':
-        machines.stop(args.env, args.groups)
+        machines.stop(args.env, args.groups, args.single)
     elif args.action == 'restart':
-        machines.restart(args.env, args.groups)
+        machines.restart(args.env, args.groups, args.single)
     elif args.action == 'suspend':
-        machines.suspend(args.env, args.groups)
+        machines.suspend(args.env, args.groups, args.single)
     elif args.action == 'status':
-        machines.status(args.env, args.groups)
+        machines.status(args.env, args.groups, args.single)
     elif args.action == 'create':
-        machines.create(args.env, args.groups)
+        machines.create(args.env, args.groups, args.single)
 
     else:
         args.print_help()
