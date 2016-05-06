@@ -155,15 +155,20 @@ class Machines:
             finally:
                 print "failed."
 
-    def status(self, env, group):
+    def status(self, env, group, single):
         running_list = self.get_list_running(self.vm.list(), env, group)
-        if len(running_list) is 0:
-            print 'No machine running'
+        if single is None:
+            if len(running_list) is 0:
+                print 'No machine running'
+            else:
+                print "Machines running:"
+                for machine in running_list:
+                    print machine
+                print "Total: %s machine(s) running" % len(running_list)
+        elif single in running_list:
+            print "The machine %s is running." % single
         else:
-            print "Machines running:"
-            for machine in running_list:
-                print machine
-            print "Total: %s machine(s) running" % len(running_list)
+            print "The machine %s is not running." % single
 
     def create(self, env, groups):
         machine_list = self.get_list(env, groups)
