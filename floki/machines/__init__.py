@@ -21,7 +21,13 @@ class Machines:
             print str(e)
 
     def get_vmx_path(self, env, group, name):
-        machine = self.config[1]['machines'][env][group][name]
+        machines = self.config[1]['machines'][env]
+        if group is not None:
+            machine = machines[group][name]
+        else:
+            for group in machines:
+                if name in machines[group]:
+                    machine = machines[group][name]
 
         if type(machine) is dict and 'path' in machine:
             path = machine['path']
