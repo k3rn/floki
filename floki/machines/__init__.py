@@ -48,7 +48,7 @@ class Machines:
             if os.path.isfile(machine_path):
                 return True
         else:
-            raise IOError('Machine doesn\'t exist.')
+            return False
 
     def get_list(self, env, groups):
 
