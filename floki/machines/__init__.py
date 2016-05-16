@@ -170,15 +170,17 @@ class Machines:
         else:
             print "The machine %s is not running." % single
 
-    def create(self, env, groups):
+    def create(self, env, groups, single):
         machine_list = self.get_list(env, groups)
+        if single is not None and single in machine_list:
+            machine_list = {single: self.get_vmx_path(env, None, single)}
         template = self.config[0]['project']['template']
 
-        if not self.vm.vmx_path_is_valid(template):
-            print "The template %s is invalid" % template
+        if not self.does_machine_exists(template):
+            print "The template %s doesn\'t exist." % template
 
         for machine in machine_list:
-            if self.vm.vmx_path_is_valid(machine_list[machine]) and False:
+            if self.does_machine_exists(machine_list[machine]) and False:
                 print "%s" % machine_list[machine],
                 print "Already exists, not creating."
             else:
