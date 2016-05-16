@@ -118,19 +118,22 @@ class Machines:
         except:
             print "failed."
 
-    def start(self, env, groups):
-        machines_running = self.get_list_running(self.vm.list(), env, groups)
+    def start(self, env, groups, single):
         machine_list = self.get_list(env, groups)
-        for machine in machine_list:
+        if single is None:
+            for machine in machine_list:
+                try:
+                    print "[%s] Starting %s:" % (env, machine),
+                    if self.does_machine_exists(machine_list[machine]):
+                        self.vm.start(machine_list[machine], False)
+                        print "ok"
+                except IOError, e:
+                    print " %s" % str(e)
+        else:
             try:
-                print "[%s] Starting %s:" % (env, machine),
-                if self.does_machine_exists(machine_list[machine]):
-                    self.vm.start(machine_list[machine], False)
-                    print "ok"
-            except IOError, e:
-                print " %s" % str(e)
-
-        self.generate_inventory(env, groups)
+                self.vm.start(machine_list[single], False)
+            except KeyError:
+                print "The machine %s is not in the inventory." % single
 
     def stop(self, env, groups):
         machine_list = self.get_list_running(self.vm.list(), env, groups)
