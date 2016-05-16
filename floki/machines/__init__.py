@@ -135,15 +135,23 @@ class Machines:
             except KeyError:
                 print "The machine %s is not in the inventory." % single
 
-    def stop(self, env, groups):
-        machine_list = self.get_list_running(self.vm.list(), env, groups)
-        for machine in machine_list:
+    def stop(self, env, groups, single):
+        machines_running = self.get_list_running(self.vm.list(), env, groups)
+        if single is None:
+            for machine in machines_running:
+                try:
+                    print "[%s] Stopping %s:" % (env, machine),
+                    self.vm.stop(machines_running[machine], False)
+                    print "ok."
+                except:
+                    print "failed."
+        else:
+            print "Stoping %s: " % single,
             try:
-                print "[%s] Stopping %s:" % (env, machine),
-                self.vm.stop(machine_list[machine]), False
+                self.vm.stop(machines_running[single], False)
                 print "ok."
-            except:
-                print "failed."
+            except KeyError:
+                print "failed. Machine is not running."
 
     def restart(self, env, groups):
         stop(env, groups)
