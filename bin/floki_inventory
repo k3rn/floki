@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+import json
+import argparse
+from floki.machines import Machines
+from os import environ
+
+
+def parse_arguments():
+
+    parser = argparse.ArgumentParser(
+        prog='floki_inventory',
+        description='Inventory script to use with ansible',
+        add_help=True,
+    )
+
+    parser.add_argument('--list', action='store_true', dest='list_inventory',
+                        default=False, help='Get the inventory')
+
+    parser.add_argument('--host', dest='host', default='null',
+                        help='Get the information about a specific host')
+    args = parser.parse_args()
+
+    return args
+#
+# Use env vars to set things, instead of using command args
+# os.getenv(var, defaultvalue)
+#
+
+
+def generate_list(config, env, groups):
+    machines = Machines(config)
+    inventory = machines.generate_inventory(env, groups)
+    print(json.dumps((inventory), indent=4))
+
+if __name__ == '__main__':
+    args = parse_arguments()
+
+    config = environ.get('FLOKI_CONFIG', 'floki.yml')
+    env = environ.get('FLOKI_ENV', 'development')
+    groups = environ.get('FLOKI_GROUP', 'all').split(",")
+
+    if args.list_inventory:
+        generate_list(config, env, groups)
+    elif args.host != 'null':
+        print(json.dumps(dict()))
+    else:
+        args.print_help()
+        sys.exit(1)

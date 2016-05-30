@@ -90,33 +90,34 @@ class Machines:
         if groups[0] is 'all':
             groups = self.config[1]['machines'][env].keys()
 
-        print "[%s] Crating the inventory file:" % env,
+        metavar = dict()
+        inventory = dict()
 
         try:
-            with open(env + '.ini', 'w') as inventory:
-                for group in groups:
-                    inventory.write('[' + group + ']' + '\n')
-                    machines = self.config[1]['machines'][env][group]
-                    for name in machines:
-                        ip = self.vm.get_ip(self.get_vmx_path(env, group,
-                                                              name))
-                        if ip == '\n':
-                            for i in range(0, 5):
-                                time.sleep(5)
-                                ip = self.vm.get_ip(self.get_vmx_path(env,
-                                                                      group,
-                                                                      name))
-                                if ip != '\n':
-                                    break
+            for group in groups:
+                machines = self.config[1]['machines'][env][group]
+                inventory[group] = list()
+                for name in machines:
+                    inventory[group].append(name)
+                    ip = self.vm.get_ip(self.get_vmx_path(env, group,
+                                                          name))
+                    if ip == '\n':
+                        for i in range(0, 5):
+                            time.sleep(5)
+                            ip = self.vm.get_ip(self.get_vmx_path(env, group,
+                                                                  name))
+                            if ip != '\n':
+                                break
 
-                        if 'Error' not in ip:
-                            ipaddr = '  ansible_ssh_host=' + ip
-                            inventory.write(name + ipaddr)
-                        else:
-                            raise ValueError
-            print "ok."
+                    if 'Error' not in ip:
+                        metavar[name] = {"ansible_host": ip.rstrip()}
+                    else:
+                        raise ValueError
         except:
             print "failed."
+
+        inventory.update({"_meta": {"hostvars": metavar}})
+        return inventory
 
     def start(self, env, groups, single):
         machine_list = self.get_list(env, groups)

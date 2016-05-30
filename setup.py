@@ -8,6 +8,6 @@ setup(
     license='LICENSE.txt',
     install_requires=['pyYAML'],
     packages=find_packages(exclude=["tests"]),
-    scripts=['bin/floki'],
+    scripts=['bin/floki', 'bin/floki_inventory'],
     test_suite='floki.tests'
 )
