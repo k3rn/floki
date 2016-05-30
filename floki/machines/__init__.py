@@ -156,9 +156,9 @@ class Machines:
             except KeyError:
                 print "failed. Machine is not running."
 
-    def restart(self, env, groups):
-        stop(env, groups)
-        start(env, groups)
+    def restart(self, env, groups, single):
+        self.stop(env, groups, single)
+        self.start(env, groups, single)
 
     def suspend(self, env, groups):
         for machine in self.get_list_running(self.vm.list(), env, groups):
