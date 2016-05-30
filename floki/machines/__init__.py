@@ -131,10 +131,12 @@ class Machines:
                 except IOError, e:
                     print " %s" % str(e)
         else:
+            print "Starting %s:" % single,
             try:
                 self.vm.start(machine_list[single], False)
+                print "ok."
             except KeyError:
-                print "The machine %s is not in the inventory." % single
+                print "failed. Machine does not exist."
 
     def stop(self, env, groups, single):
         machines_running = self.get_list_running(self.vm.list(), env, groups)
