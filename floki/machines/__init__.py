@@ -52,14 +52,20 @@ class Machines:
 
     def get_list(self, env, groups):
 
-        list = dict()
+        machine_list = dict()
         if groups[0] is 'all':
             groups = self.config[1]['machines'][env].keys()
 
         for group in groups:
             try:
                 for name in self.config[1]['machines'][env][group]:
-                    list[name] = self.get_vmx_path(env, group,  name)
+                    machine_list[name] = list()
+                    machine_list[name].insert(0,
+                                              self.get_vmx_path(env,
+                                                                group, name))
+
+                    options = self.config[1]['machines'][env][group][name]
+                    machine_list[name].insert(1, options)
 
             except KeyError:
                 if env not in self.config[1]['machines']:
@@ -67,8 +73,8 @@ class Machines:
                 else:
                     print "ERROR: Group %s doesn't exist" % group
 
-        if any(list):
-            return list
+        if any(machine_list):
+            return machine_list
         else:
             sys.exit(1)
 
@@ -78,9 +84,29 @@ class Machines:
         if running['count'] is not 0:
             for machine in machine_list:
                 for path in running['machines']:
-                    if machine_list[machine] in path:
+                    if machine_list[machine][0] in path:
                         running_list[machine] = path
         return running_list
+
+    def update_vmx(self, vmx_path, options):
+        vmxfile = dict()
+        with open(vmx_path, 'r') as vmx:
+            for line in vmx:
+                splitline = line.split(' = "')
+                vmxfile[splitline[0]] = splitline[1].rstrip('"\n')
+
+        if type(options) is not dict:
+            return
+
+        for item in options:
+            if item in 'cpu':
+                vmxfile['numvcpus'] = options[item]
+            if item in 'memory':
+                vmxfile['memsize'] = options[item]
+
+            with open(vmx_path, 'w') as vmx:
+                for key, value in vmxfile.items():
+                    vmx.write('%s = "%s"\n' % (key, value))
 
     def generate_inventory(self, env, groups):
         """
@@ -125,15 +151,17 @@ class Machines:
             for machine in machine_list:
                 try:
                     print "[%s] Starting %s:" % (env, machine),
-                    if self.does_machine_exists(machine_list[machine]):
-                        self.vm.start(machine_list[machine], False)
+                    if self.does_machine_exists(machine_list[machine][0]):
+                        self.vm.start(machine_list[machine][0], False)
                         print "ok"
+                    else:
+                        print "machine does not exist."
                 except IOError, e:
                     print " %s" % str(e)
         else:
             print "Starting %s:" % single,
             try:
-                self.vm.start(machine_list[single], False)
+                self.vm.start(machine_list[single][0], False)
                 print "ok."
             except KeyError:
                 print "failed. Machine does not exist."
@@ -187,26 +215,30 @@ class Machines:
     def create(self, env, groups, single):
         machine_list = self.get_list(env, groups)
         if single is not None and single in machine_list:
-            machine_list = {single: self.get_vmx_path(env, None, single)}
+            machine_list = {single: [self.get_vmx_path(env, None, single),
+                                     machine_list[single][1]]}
         template = self.config[0]['project']['template']
 
         if not self.does_machine_exists(template):
             print "The template %s doesn\'t exist." % template
 
         for machine in machine_list:
-            if self.does_machine_exists(machine_list[machine]) and False:
+            if self.does_machine_exists(machine_list[machine][0]) and False:
                 print "%s" % machine_list[machine],
                 print "Already exists, not creating."
             else:
                 print "[%s] Creating %s..." % (env, machine),
                 try:
-                    os.makedirs(machine_list[machine])
+                    os.makedirs(machine_list[machine][0])
                 except OSError:
-                    if not os.path.isdir(machine_list[machine]):
+                    if not os.path.isdir(machine_list[machine][0]):
                         raise
-                vmx_dest_path = machine_list[machine] + '/' + machine + '.vmx'
-                if not os.path.isfile(vmx_dest_path):
-                    self.vm.clone(template, vmx_dest_path)
+                vmx_dest = machine_list[machine][0] + '/' + machine + '.vmx'
+
+                if not os.path.isfile(vmx_dest):
+                    self.vm.clone(template, vmx_dest)
+                    if machine_list[machine][1] is not None:
+                        self.update_vmx(vmx_dest, machine_list[machine][1])
                     print "done."
                 else:
                     print "skiping, virtual machine already exists."

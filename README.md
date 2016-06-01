@@ -18,6 +18,8 @@ You can see below an example of an configuration file.
                 web02:
             application:
                 app01:
+					cpu: 2
+					memory: 2048
 				app02:
 			database:
 				db01:
@@ -39,3 +41,6 @@ The `- machines` list the groups and its machines.
 	- The second level lists the groups of machines, in the example they are
 	  "webserver", "application", "database".
 	- The third level lists the machines in the groups.
+	- The fourth level sets the how much memory (in MB) and the number of cpus
+	  a virtual machines. If this options are not set, they are going to be the
+	  same as the template.
