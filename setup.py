@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='floki',
-    version='0.0.1',
+    version='0.9',
     author='Mateus Kern',
     author_email='kern@mateuskern.com',
     license='LICENSE.txt',
